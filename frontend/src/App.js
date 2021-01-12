@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Col, Container, Form, Row, Table } from 'react-bootstrap';
+import { Alert, Button, Col, Container, Form, Row, Table } from 'react-bootstrap';
 import axios from 'axios';
 
 class App extends Component  {
@@ -8,12 +8,10 @@ class App extends Component  {
     this.state = {
       value: '', // Input value
       invalid: false, // Input is invalid
-      submissions: []
+      submissions: [],
+      error: null
     };
 
-    this.listSubmissions = this.listSubmissions.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -26,27 +24,21 @@ class App extends Component  {
     clearInterval(this.state.intervalId);
   }
 
-  listSubmissions() {
+  listSubmissions = () => {
     // GET /api/list_submissions
-    axios.get('http://localhost:8080/api/list_submissions')
-      .then(function(res){
-        console.log(res);
+    return axios.get('http://localhost:8080/api/list_submissions')
+      .then( res => {
+        var submissions = res.data;
+        console.log(submissions);
+        this.setState({ submissions });
       })
-      .catch(function(error){
+      .catch( error => {
         console.log(error);
+        this.setState({ error: 'Cannot query submissions.' });
       });
-      
-    var submissions = [
-      {
-        timestamp: Date.now(),
-        result: 'No match',
-        query: 'ATGCGGGCCCCCAAAAATTTTT'
-      }
-    ];
-    this.setState({ submissions });
   }
 
-  handleChange(event) {
+  handleChange = (event) => {
     this.setState({value: event.target.value});
     // Validate
     if(event.target.value && !this.state.value.match(/^[ATGC]+$/i)){
@@ -56,7 +48,7 @@ class App extends Component  {
     }
   }
 
-  handleSubmit(event) {
+  handleSubmit = (event) => {
     event.preventDefault();
     if(!this.state.value || this.state.invalid){
       return;
@@ -64,7 +56,7 @@ class App extends Component  {
     var submission = {
       timestamp: Date.now(),
       result: 'Pending',
-      query: this.state.value.toLocaleUpperCase
+      query: this.state.value.toLocaleUpperCase()
     }
     this.state.submissions.push(submission);
     this.setState({ 
@@ -72,6 +64,7 @@ class App extends Component  {
       invalid: false, 
       submissions:  this.state.submissions 
     });
+
     // POST /api/submit
   }
 
@@ -98,13 +91,23 @@ class App extends Component  {
           </Col>
         </Row>
         <br/>
+        {
+          this.state.error ? 
+          <Alert 
+            variant='danger' 
+            onClose={() => this.setState({ error: null }) } 
+            dismissible>
+            { 'Oops! '+ this.state.error }
+          </Alert> : null
+        }
+        <br/>
         <Row>
           <Col>
             <Table>
               <thead>
                 <tr>
                   <th style={{width: '20%'}}>Time</th>
-                  <th style={{width: '50%'}}>Results</th>
+                  <th style={{width: '50%'}}>Result</th>
                   <th style={{width: '30%'}}>Query</th>
                 </tr>
               </thead>

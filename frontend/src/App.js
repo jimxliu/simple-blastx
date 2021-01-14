@@ -7,7 +7,6 @@ class App extends Component  {
     super(props);
     this.state = {
       value: '', // Input value
-      invalid: false, // Input is invalid
       submissions: [],
       error: null
     };
@@ -29,44 +28,76 @@ class App extends Component  {
     return axios.get('http://localhost:8080/api/list_submissions')
       .then( res => {
         var submissions = res.data;
-        console.log(submissions);
         this.setState({ submissions });
       })
       .catch( error => {
-        console.log(error);
+        console.error(error);
         this.setState({ error: 'Cannot query submissions.' });
       });
   }
 
   handleChange = (event) => {
     this.setState({value: event.target.value});
-    // Validate
-    if(event.target.value && !this.state.value.match(/^[ATGC]+$/i)){
-      this.setState({ invalid: true});
-    } else {
-      this.setState({ invalid: false});
-    }
   }
 
   handleSubmit = (event) => {
     event.preventDefault();
-    if(!this.state.value || this.state.invalid){
+    if(!this.state.value) return;
+    var query = this.state.value;
+    query = query.replace(/\s/g, '').toUpperCase();   
+    // Validate query sequence
+    if(!query.match(/^[ATGC]+$/i)){
+      this.setState({ error: 'Invalid DNA Sequence (Only accept A, T, C, G).' });
       return;
     }
+    // Display submission on UI
     var submission = {
       timestamp: Date.now(),
-      result: 'Pending',
-      query: this.state.value.toLocaleUpperCase()
+      results: 'Pending',
+      query: query
     }
-    this.state.submissions.push(submission);
+    this.state.submissions.unshift(submission);
     this.setState({ 
       value: '', 
-      invalid: false, 
+      error: null,
       submissions:  this.state.submissions 
     });
-
     // POST /api/submit
+    axios.post('http://localhost:8080/api/submit', { query })
+      .then( res => {
+        console.log(res);
+      })
+      .catch( error => {
+        console.error(error);
+        this.setState({ error: 'Cannot process this submission. Please try again.' });
+      });
   }
+
+  handleReset = () => {
+    this.setState({ value: '' })
+  }
+
+  renderResults = (results) => {
+    if (results && Array.isArray(results)){
+      const listItems = results.map((result, index) => {
+        return(
+          <li key={index}>
+            <span style={{color: 'darkgreen'}}>Matched</span> at <b>index {result.start}</b> of <b>{result.name}</b> ({result.description})
+          </li>
+        );
+      });
+      return ( <div>{listItems}</div> );
+    } else {
+      var textColor = 'black';
+      if(results === 'No match found'){
+        textColor = 'darkred';
+      } 
+      return (  
+        <p style={{color: textColor}}>{results}</p>
+      );
+    };
+  }
+
 
   render() {
     return (
@@ -82,11 +113,10 @@ class App extends Component  {
                   rows={3}
                   value={this.state.value}
                   onChange={this.handleChange}
-                  isInvalid={this.state.invalid}
                 />
-                <Form.Control.Feedback type="invalid">Invalid DNA Sequence (Only accept A, T, C, G)</Form.Control.Feedback>
               </Form.Group>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">Submit</Button>{' '}
+              <Button variant="dark" onClick={this.handleReset}>Reset</Button>
             </Form>
           </Col>
         </Row>
@@ -106,8 +136,8 @@ class App extends Component  {
             <Table>
               <thead>
                 <tr>
-                  <th style={{width: '20%'}}>Time</th>
-                  <th style={{width: '50%'}}>Result</th>
+                  <th style={{width: '20%'}}>Create Time</th>
+                  <th style={{width: '50%'}}>Results</th>
                   <th style={{width: '30%'}}>Query</th>
                 </tr>
               </thead>
@@ -116,9 +146,9 @@ class App extends Component  {
                   this.state.submissions.map((entry, index) => {
                     return (
                       <tr key={ index }>
-                        <td style={{width: '20%'}}>{ entry.timestamp }</td>
-                        <td style={{width: '50%'}}>{ entry.result} </td>
-                        <td style={{width: '30%'}}>{ entry.query }</td>
+                        <td style={{width: '20%'}}>{ new Date(entry.timestamp).toLocaleString() }</td>
+                        <td style={{width: '50%', minWidth: '400px'}}>{ this.renderResults(entry.results) } </td>
+                        <td style={{width: '30%', maxWidth: '250px', overflowX: 'auto'}}>{ entry.query }</td>
                       </tr>
                     );
                   })

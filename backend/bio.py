@@ -6,8 +6,6 @@ def query(dna_seq: str) -> list:
     '''
     Find target gene sequences that contain the query sequence
     '''
-    if not dna_seq:
-        return None
     results = []    
     for gene in get_target_genes():
         start = gene.seq.find(dna_seq) # Match start index

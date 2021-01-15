@@ -1,4 +1,5 @@
 version: 0.2
 
 artifacts:
-    files: ./backend/*
+    files: "*"
+    base-directory: backend/

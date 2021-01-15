@@ -10,4 +10,5 @@ phases:
       - npm install
       - npm run build
 artifacts:
-  files: frontend/build/*
+  files: "*"
+  base-directory: frontend/build

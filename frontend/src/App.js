@@ -25,7 +25,7 @@ class App extends Component  {
 
   listSubmissions = () => {
     // GET /api/list_submissions
-    return axios.get(`${process.env.REACT_APP_BACKEND_URI}/api/list_submissions`)
+    return axios.get(`${process.env.REACT_APP_BACKEND_URL}/list_submissions`)
       .then( res => {
         var submissions = res.data;
         this.setState({ submissions });
@@ -63,7 +63,7 @@ class App extends Component  {
       submissions:  this.state.submissions 
     });
     // POST /api/submit
-    axios.post(`${process.env.REACT_APP_BACKEND_URI}/api/submit`, { query })
+    axios.post(`${process.env.REACT_APP_BACKEND_URL}/submit`, { query })
       .then( res => {
         console.log(res);
       })

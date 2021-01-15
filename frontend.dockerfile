@@ -4,6 +4,9 @@ WORKDIR /app
 
 COPY ./frontend .
 
+RUN pwd
+RUN ls
+
 RUN npm install
 
 EXPOSE 3000

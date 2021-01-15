@@ -5,20 +5,20 @@ import bio
 
 submissions = [] # In-memory storage
 
-app = Flask(__name__)
-CORS(app)
+application = Flask(__name__)
+CORS(application)
 # NOTE: This route is needed for the default EB health check route
-@app.route('/')
+@application.route('/')
 def home():
     return "ok"
 
-@app.route('/api/list_submissions')
+@application.route('/api/list_submissions')
 def list_submissions():
     # In a descending order of timestamp
     reversed_submissions = submissions[::-1]
     return jsonify(reversed_submissions) 
 
-@app.route('/api/submit', methods=["POST"])
+@application.route('/api/submit', methods=["POST"])
 def submit():
     data =  json.loads(request.data) # { query }
     if 'query' not in data:
@@ -41,4 +41,4 @@ def submit():
     
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8080)
+    application.run(host='0.0.0.0',port=8080)

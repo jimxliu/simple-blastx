@@ -2,12 +2,11 @@ FROM node:12.20.1-alpine3.10
 
 WORKDIR /app
 
-COPY ./frontend .
-
-RUN pwd
-RUN ls
+COPY ./frontend/package.json .
 
 RUN npm install
+
+COPY ./frontend .
 
 EXPOSE 3000
 

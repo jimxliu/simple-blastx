@@ -63,7 +63,7 @@ class App extends Component  {
       submissions:  this.state.submissions 
     });
     // POST /api/submit
-    axios.post('http://localhost:8080/api/submit', { query })
+    axios.post(`${process.env.REACT_APP_BACKEND_URI}/api/submit`, { query })
       .then( res => {
         console.log(res);
       })

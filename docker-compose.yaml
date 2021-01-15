@@ -8,9 +8,7 @@ services:
     ports: 
       - 3000:3000
     environment:
-      REACT_APP_BACKEND_URI: http://localhost:8080
-    networks: 
-      - web
+      REACT_APP_BACKEND_URI: http://192.168.99.101:8080
 
   backend:
     image: backend:latest
@@ -19,8 +17,3 @@ services:
       dockerfile: backend.dockerfile 
     ports:
       - 8080:8080
-    networks: 
-      - web
-
-networks:
-  web:

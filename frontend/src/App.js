@@ -25,7 +25,7 @@ class App extends Component  {
 
   listSubmissions = () => {
     // GET /api/list_submissions
-    return axios.get('http://localhost:8080/api/list_submissions')
+    return axios.get(`${process.env.REACT_APP_BACKEND_URI}/api/list_submissions`)
       .then( res => {
         var submissions = res.data;
         this.setState({ submissions });

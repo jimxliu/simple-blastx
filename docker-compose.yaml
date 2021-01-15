@@ -2,6 +2,11 @@ version: '3'
 
 services:
   frontend:
-    image: 719154571876.dkr.ecr.us-east-1.amazonaws.com/simple-blastx/frontend:1
+    image: 719154571876.dkr.ecr.us-east-1.amazonaws.com/simple-blastx/frontend:latest
     ports: 
       - 80:3000
+    env:
+      REACT_APP_BACKEND_URI: backend
+    
+  backend:
+    image: 719154571876.dkr.ecr.us-east-1.amazonaws.com/simple-blastx/backend:latest

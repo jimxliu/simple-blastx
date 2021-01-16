@@ -7,6 +7,7 @@ phases:
   build:
     commands:
       - cd frontend
+      - export REACT_APP_BACKEND_URL=/api
       - npm install
       - npm run build
 artifacts:

@@ -9,4 +9,7 @@ Note that you might need to change the env variable `REACT_APP_BACKEND_URL` valu
 ## Cloud deployment
 I set up a CICD pipeline using CodePipeline with Github as the source, CodeBuild as the builder, and Elastic Beanstalk (backend) and S3 (static frontend) as the deployment platforms. There is also a CloudFront in front of S3 as a content distribution service.
 
+CloudFront URL: [here](https://d2thuo4s7eempw.cloudfront.net/)
+
+The  following is the CICD pipeline
 ![AWS Workflow](./aws-workflow.png)
